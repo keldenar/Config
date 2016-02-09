@@ -1,0 +1,29 @@
+<?php
+
+namespace Ephemeral\Providers;
+
+use Ephemeral\Config;
+use Silex\ServiceProviderInterface;
+use Silex\Application;
+
+class ConfigServiceProvider implements ServiceProviderInterface {
+
+    private $dirname;
+
+    public function __construct($dirname) {
+        $this->dirname = $dirname;
+    }
+
+    public function register(Application $app)
+    {
+        // TODO: Implement register() method.
+        $app['config'] = $app->share(function () use ($this) {
+            return new Config($this->dirname);
+        });
+    }
+
+    public function boot(Application $app)
+    {
+        // TODO: Implement boot() method.
+    }
+}
