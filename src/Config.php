@@ -2,6 +2,8 @@
 
 namespace Ephemeral;
 
+use Symfony\Component\Finder\Finder;
+
 class Config {
     protected $directory;
     protected $config = [];
@@ -54,4 +56,5 @@ class Config {
         }
         return $tree;
     }
+
 }
