@@ -17,8 +17,9 @@ class ConfigServiceProvider implements ServiceProviderInterface {
     public function register(Application $app)
     {
         // TODO: Implement register() method.
-        $app['config'] = $app->share(function () use ($this) {
-            return new Config($this->dirname);
+        $dir = $this->dirname;
+        $app['config'] = $app->share(function () use ($dir) {
+            return new Config($dir);
         });
     }
 
