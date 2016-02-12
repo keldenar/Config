@@ -15,28 +15,53 @@ class Config {
         }
     }
 
-    public function set($key, $values = null) {
-        if (is_array($values)) {
-            foreach ($values as $config_key=>$config_value) {
-                $config_key = sprintf("%s.%s", $key, $config_key);
-                $this->config[$config_key] = $config_value;
+    public function set($key, $value = null) {
+        if (is_array($key)) {
+            foreach ($key as $innerKey => $innerValue) {
+                $this->setConfig($this->config, $innerKey, $innerValue);
+            }
+        }else {
+            $this->setConfig($this->config, $key, $value);
+        }
+    }
+
+    public function setConfig(&$array, $key, $value) {
+        if (is_null($key)) {
+            return $array = $value;
+        }
+        $keys = explode('.', $key);
+        while (count($keys) > 1) {
+            $key = array_shift($keys);
+            if (! isset($array[$key]) || ! is_array($array[$key])) {
+                $array[$key] = [];
             }
         }
+
+        $array[array_shift($keys)] = $value;
+        return $array;
     }
 
     public function all() {
         return $this->config;
     }
 
-    public function get($variable) {
-        list($file, $value) = explode(".", $variable, 2);
-        if (($file == null) || ($value == null)) {
-            $this->abort(500, "Expected field as file.entry");
+    public function get($key, $default = null) {
+        $array = $this->config;
+        if (is_null($key)) {
+            return $array;
         }
-        if (array_key_exists($variable, $this->config)) {
-            return $this->config[$variable];
+        if (isset($array[$key])) {
+            return $array[$key];
         }
+        foreach (explode('.', $key) as $segment) {
+            if ((! is_array($array) || ! array_key_exists($segment, $array))) {
+                return $default;
+            }
+            $array = $array[$segment];
+        }
+        return $array;
     }
+
 
     private function getConfigFiles() {
         $files = [];
